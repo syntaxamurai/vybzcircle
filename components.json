@@ -1,0 +1,12 @@
+{
+  "components": "./src/components/ui",
+  "utils": "./src/lib/utils.ts",
+  "types": "./src/types",
+  "tailwindCss": "tailwind.config.js",
+  "tsConfig": "tsconfig.json",
+  "aliases": {
+    "@/components": "./src/components",
+    "@/lib": "./src/lib",
+    "@/types": "./src/types"
+  }
+}
