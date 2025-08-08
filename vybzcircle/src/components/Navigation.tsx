@@ -1,10 +1,12 @@
 import { Button } from "@/components/ui/button";
-import { Menu, X, Calendar, MapPin, Users, Sparkles } from "lucide-react";
+import { Menu, X, Calendar, MapPin, Users, Sparkles, User } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user } = useAuth();
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-vybz-dark/95 backdrop-blur-md border-b border-white/10">
@@ -39,12 +41,27 @@ const Navigation = () => {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button variant="ghost" className="text-white hover:text-vybz-pink">
-              Sign In
-            </Button>
-            <Button variant="vybz" size="sm">
-              Get Started
-            </Button>
+            {user ? (
+              <Link to="/profile">
+                <Button variant="ghost" className="text-white hover:text-vybz-pink">
+                  <User className="w-4 h-4 mr-2" />
+                  Profile
+                </Button>
+              </Link>
+            ) : (
+              <>
+                <Link to="/auth">
+                  <Button variant="ghost" className="text-white hover:text-vybz-pink">
+                    Sign In
+                  </Button>
+                </Link>
+                <Link to="/auth">
+                  <Button variant="vybz" size="sm">
+                    Get Started
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -91,12 +108,27 @@ const Navigation = () => {
                 Brands
               </Link>
               <div className="flex flex-col space-y-2 px-3 pt-4">
-                <Button variant="ghost" className="text-white hover:text-vybz-pink">
-                  Sign In
-                </Button>
-                <Button variant="vybz" size="sm">
-                  Get Started
-                </Button>
+                {user ? (
+                  <Link to="/profile">
+                    <Button variant="ghost" className="text-white hover:text-vybz-pink">
+                      <User className="w-4 h-4 mr-2" />
+                      Profile
+                    </Button>
+                  </Link>
+                ) : (
+                  <>
+                    <Link to="/auth">
+                      <Button variant="ghost" className="text-white hover:text-vybz-pink">
+                        Sign In
+                      </Button>
+                    </Link>
+                    <Link to="/auth">
+                      <Button variant="vybz" size="sm">
+                        Get Started
+                      </Button>
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </div>
