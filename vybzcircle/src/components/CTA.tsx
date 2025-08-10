@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sparkles, ArrowRight, Bell } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const CTA = () => {
   return (
@@ -17,7 +18,11 @@ const CTA = () => {
         <div className="text-center">
           <div className="flex justify-center mb-6">
             <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-md">
-              <Sparkles className="h-8 w-8 text-white" />
+              <img
+                src="/placeholder.ico"
+                alt="The Vybz Circle Logo"
+                className="w-8 h-8 rounded-full object-cover"
+              />
             </div>
           </div>
           
@@ -51,13 +56,25 @@ const CTA = () => {
           {/* Main CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
             <Button variant="glass" size="lg" className="text-lg px-8 py-4 border-2 border-white/30">
-              <Sparkles className="mr-2 h-5 w-5" />
+              <img
+                src="/download.png"
+                alt="The Vybz Circle Logo"
+                className="w-8 h-8 rounded-full object-cover"
+              />
               Download App
             </Button>
-            <Button variant="hero" size="lg" className="text-lg px-8 py-4 bg-white text-vybz-purple hover:bg-white/90">
-              Explore Web Version
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
+            
+            <Link to="/events">
+              <Button
+                variant="hero"
+                size="lg"
+                className="text-lg px-8 py-4 bg-white text-vybz-purple hover:bg-white/90"
+              >
+                Explore Web Version
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
+
           </div>
 
           {/* Stats */}

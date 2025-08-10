@@ -8,6 +8,8 @@ import {
   Sparkles,
   User,
   ShoppingCart,
+  Sun,
+  Moon
 } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -17,6 +19,7 @@ import { useCart } from "@/contexts/CartContext";
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user } = useAuth();
+  
 
   // safe cart access
   let totalTickets = 0;

@@ -12,6 +12,11 @@ import {
   Heart,
   ChevronDown,
   ChevronUp,
+  Clock,
+  Eye,
+  X,
+  Users,
+  DollarSign,
 } from "lucide-react";
 
 type EventType = "all" | "18+" | "family";
@@ -19,13 +24,16 @@ type FilterType = "date" | "location" | "eventType";
 
 interface Event {
   id: number;
-  date: Date; // full date
+  date: Date; // full date with time
   title: string;
   venue: string;
   type: EventType;
-  county: string; // add county for location filter
-  ticketPrice: number; // new
-  ticketsAvailable: number; // new
+  county: string;
+  ticketPrice: number;
+  ticketsAvailable: number;
+  description?: string; // Add description for details view
+  organizer?: string; // Add organizer info
+  category?: string; // Add category info
 }
 
 const countiesKenya = [
@@ -83,6 +91,7 @@ const Events = () => {
   const [cart, setCart] = useState<(Event & { quantity: number })[]>([]);
   const [wishlist, setWishlist] = useState<Event[]>([]);
   const [ticketsSold, setTicketsSold] = useState<Record<number, number>>({});
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const navigate = useNavigate();
 
   // Single filter dropdown state
@@ -113,39 +122,63 @@ const Events = () => {
     "December",
   ];
 
-  // Mock events with full dates, counties, ticket info
+  // Mock events with full dates including time, counties, ticket info
   const mockEvents: Event[] = [
     {
       id: 1,
-      date: new Date(2025, 7, 15),
+      date: new Date(2025, 7, 15, 19, 30), // August 15, 2025 at 7:30 PM
       title: "Summer Music Festival",
       venue: "Uhuru Gardens",
       type: "all",
       county: "Nairobi",
       ticketPrice: 1200,
       ticketsAvailable: 100,
+      description: "Join us for an unforgettable evening of live music featuring top local and international artists. Experience multiple genres across three different stages with food trucks and artisan vendors throughout the venue.",
+      organizer: "Nairobi Events Co.",
+      category: "Music & Entertainment",
     },
     {
       id: 2,
-      date: new Date(2025, 7, 22),
+      date: new Date(2025, 7, 22, 20, 0), // August 22, 2025 at 8:00 PM
       title: "Comedy Night",
       venue: "Carnivore Grounds",
       type: "18+",
       county: "Nairobi",
       ticketPrice: 800,
       ticketsAvailable: 50,
+      description: "Get ready to laugh until your sides hurt! Our comedy night features Kenya's funniest stand-up comedians and special guest appearances. Age restriction: 18+ due to mature content.",
+      organizer: "Laugh Track Entertainment",
+      category: "Comedy & Entertainment",
     },
     {
       id: 3,
-      date: new Date(2025, 7, 28),
+      date: new Date(2025, 7, 28, 14, 0), // August 28, 2025 at 2:00 PM
       title: "Art Exhibition",
       venue: "Kenya National Theatre",
       type: "family",
       county: "Nairobi",
       ticketPrice: 500,
       ticketsAvailable: 30,
+      description: "Explore contemporary African art in this curated exhibition featuring works from emerging and established artists. Family-friendly event with guided tours and interactive workshops for children.",
+      organizer: "Kenya Arts Foundation",
+      category: "Arts & Culture",
     },
   ];
+
+  // Helper function to format date and time
+  const formatDateTime = (date: Date) => {
+    const dateStr = date.toLocaleDateString(undefined, {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+    const timeStr = date.toLocaleTimeString(undefined, {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+    return { dateStr, timeStr };
+  };
 
   // Load cart, wishlist and ticketsSold from localStorage on mount
   useEffect(() => {
@@ -290,6 +323,14 @@ const Events = () => {
     setFilterDropdownOpen(false);
   };
 
+  const openEventDetails = (event: Event) => {
+    setSelectedEvent(event);
+  };
+
+  const closeEventDetails = () => {
+    setSelectedEvent(null);
+  };
+
   return (
     <div className="min-h-screen bg-vybz-dark">
       <Navigation />
@@ -416,7 +457,7 @@ const Events = () => {
                           }
                         `}
                         type="button"
-                        aria-pressed={isSelected}
+                        aria-pressed={isSelected || false}
                       >
                         {day}
                       </button>
@@ -528,6 +569,8 @@ const Events = () => {
                     100,
                     Math.round((sold / event.ticketsAvailable) * 100)
                   );
+                  const { dateStr, timeStr } = formatDateTime(event.date);
+                  
                   return (
                     <div
                       key={event.id}
@@ -542,13 +585,13 @@ const Events = () => {
                           <MapPin className="w-4 h-4" />
                           {event.venue} - {event.county}
                         </p>
-                        <p className="text-vybz-light mb-1">
-                          Date:{" "}
-                          {event.date.toLocaleDateString(undefined, {
-                            year: "numeric",
-                            month: "short",
-                            day: "numeric",
-                          })}
+                        <p className="text-vybz-light mb-1 flex items-center gap-2">
+                          <Calendar className="w-4 h-4" />
+                          {dateStr}
+                        </p>
+                        <p className="text-vybz-light mb-2 flex items-center gap-2">
+                          <Clock className="w-4 h-4" />
+                          {timeStr}
                         </p>
                         <p className="text-vybz-light mb-2">
                           Price: KES {event.ticketPrice.toLocaleString()}
@@ -561,7 +604,15 @@ const Events = () => {
                         <div className="flex gap-2">
                           <Button
                             size="sm"
+                            variant="outline"
+                            onClick={() => openEventDetails(event)}
                             className="flex-1"
+                          >
+                            <Eye className="w-4 h-4 mr-2" />
+                            View Details
+                          </Button>
+                          <Button
+                            size="sm"
                             onClick={() => addToCart(event)}
                             disabled={sold >= event.ticketsAvailable}
                             title={
@@ -569,6 +620,7 @@ const Events = () => {
                                 ? "Sold Out"
                                 : "Buy Ticket"
                             }
+                            className="flex-1"
                           >
                             <Ticket className="w-4 h-4 mr-2" />
                             {sold >= event.ticketsAvailable
@@ -598,6 +650,171 @@ const Events = () => {
           </div>
         </div>
       </main>
+
+      {/* Event Details Modal */}
+      {selectedEvent && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-vybz-surface rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="relative">
+              {/* Modal Header */}
+              <div className="h-64 bg-gradient-to-br from-vybz-primary to-vybz-accent relative">
+                <button
+                  onClick={closeEventDetails}
+                  className="absolute top-4 right-4 bg-black/50 hover:bg-black/70 rounded-full p-2 transition-colors"
+                >
+                  <X className="w-6 h-6 text-white" />
+                </button>
+                <div className="absolute bottom-4 left-6">
+                  <h2 className="text-3xl font-bold text-white mb-2">
+                    {selectedEvent.title}
+                  </h2>
+                  <p className="text-white/90 flex items-center gap-2">
+                    <MapPin className="w-5 h-5" />
+                    {selectedEvent.venue} - {selectedEvent.county}
+                  </p>
+                </div>
+              </div>
+
+              {/* Modal Content */}
+              <div className="p-6">
+                {/* Date and Time Row */}
+                <div className="grid md:grid-cols-2 gap-4 mb-6">
+                  <div className="flex items-center gap-3 text-vybz-light">
+                    <Calendar className="w-5 h-5 text-vybz-primary" />
+                    <div>
+                      <p className="text-sm text-vybz-light/70">Date</p>
+                      <p className="text-white font-medium">
+                        {formatDateTime(selectedEvent.date).dateStr}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 text-vybz-light">
+                    <Clock className="w-5 h-5 text-vybz-primary" />
+                    <div>
+                      <p className="text-sm text-vybz-light/70">Time</p>
+                      <p className="text-white font-medium">
+                        {formatDateTime(selectedEvent.date).timeStr}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Additional Info Row */}
+                <div className="grid md:grid-cols-3 gap-4 mb-6">
+                  <div className="flex items-center gap-3 text-vybz-light">
+                    <DollarSign className="w-5 h-5 text-vybz-primary" />
+                    <div>
+                      <p className="text-sm text-vybz-light/70">Price</p>
+                      <p className="text-white font-medium">
+                        KES {selectedEvent.ticketPrice.toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 text-vybz-light">
+                    <Users className="w-5 h-5 text-vybz-primary" />
+                    <div>
+                      <p className="text-sm text-vybz-light/70">Available</p>
+                      <p className="text-white font-medium">
+                        {selectedEvent.ticketsAvailable - (ticketsSold[selectedEvent.id] || 0)} tickets
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 text-vybz-light">
+                    <Ticket className="w-5 h-5 text-vybz-primary" />
+                    <div>
+                      <p className="text-sm text-vybz-light/70">Category</p>
+                      <p className="text-white font-medium capitalize">
+                        {selectedEvent.type === "18+" ? "18+" : selectedEvent.type === "family" ? "Family" : "All Ages"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Organizer and Category */}
+                {(selectedEvent.organizer || selectedEvent.category) && (
+                  <div className="grid md:grid-cols-2 gap-4 mb-6">
+                    {selectedEvent.organizer && (
+                      <div>
+                        <p className="text-sm text-vybz-light/70 mb-1">Organizer</p>
+                        <p className="text-white font-medium">{selectedEvent.organizer}</p>
+                      </div>
+                    )}
+                    {selectedEvent.category && (
+                      <div>
+                        <p className="text-sm text-vybz-light/70 mb-1">Category</p>
+                        <p className="text-white font-medium">{selectedEvent.category}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Description */}
+                {selectedEvent.description && (
+                  <div className="mb-6">
+                    <h3 className="text-white font-semibold mb-3">About This Event</h3>
+                    <p className="text-vybz-light leading-relaxed">
+                      {selectedEvent.description}
+                    </p>
+                  </div>
+                )}
+
+                {/* Ticket Status */}
+                <div className="mb-6">
+                  <div className="bg-vybz-dark rounded-lg p-4">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-vybz-light">Tickets Sold</span>
+                      <span className="text-white font-medium">
+                        {ticketsSold[selectedEvent.id] || 0} / {selectedEvent.ticketsAvailable}
+                      </span>
+                    </div>
+                    <div className="w-full bg-gray-700 rounded-full h-2">
+                      <div
+                        className="bg-vybz-primary h-2 rounded-full transition-all duration-300"
+                        style={{
+                          width: `${Math.min(
+                            100,
+                            Math.round(((ticketsSold[selectedEvent.id] || 0) / selectedEvent.ticketsAvailable) * 100)
+                          )}%`,
+                        }}
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex gap-3">
+                  <Button
+                    className="flex-1"
+                    onClick={() => {
+                      addToCart(selectedEvent);
+                      closeEventDetails();
+                    }}
+                    disabled={(ticketsSold[selectedEvent.id] || 0) >= selectedEvent.ticketsAvailable}
+                  >
+                    <Ticket className="w-4 h-4 mr-2" />
+                    {(ticketsSold[selectedEvent.id] || 0) >= selectedEvent.ticketsAvailable
+                      ? "Sold Out"
+                      : "Buy Ticket"}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => toggleWishlist(selectedEvent)}
+                  >
+                    <Heart
+                      className={`w-4 h-4 ${
+                        wishlist.some((item) => item.id === selectedEvent.id)
+                          ? "text-green-500 fill-green-500"
+                          : "text-vybz-light"
+                      }`}
+                    />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <Footer />
     </div>
   );
