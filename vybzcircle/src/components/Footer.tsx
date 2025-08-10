@@ -36,11 +36,11 @@ const Footer = () => {
           <div className="space-y-4">
             <h3 className="text-white font-semibold">Quick Links</h3>
             <ul className="space-y-2 text-sm">
-              <li><a href="#" className="text-white/70 hover:text-white transition-colors">Home</a></li>
-              <li><a href="#events" className="text-white/70 hover:text-white transition-colors">Events</a></li>
-              <li><a href="#clubs" className="text-white/70 hover:text-white transition-colors">Clubs</a></li>
-              <li><a href="#hosts" className="text-white/70 hover:text-white transition-colors">Hosts</a></li>
-              <li><a href="#brands" className="text-white/70 hover:text-white transition-colors">Brands</a></li>
+              <li><a href="/" className="text-white/70 hover:text-white transition-colors">Home</a></li>
+              <li><a href="/events" className="text-white/70 hover:text-white transition-colors">Events</a></li>
+              <li><a href="/clubs" className="text-white/70 hover:text-white transition-colors">Clubs</a></li>
+              <li><a href="/hosts" className="text-white/70 hover:text-white transition-colors">Hosts</a></li>
+              <li><a href="/brands" className="text-white/70 hover:text-white transition-colors">Brands</a></li>
             </ul>
           </div>
 
@@ -48,11 +48,11 @@ const Footer = () => {
           <div className="space-y-4">
             <h3 className="text-white font-semibold">Categories</h3>
             <ul className="space-y-2 text-sm">
-              <li><a href="#" className="text-white/70 hover:text-white transition-colors">Night Clubs</a></li>
-              <li><a href="#" className="text-white/70 hover:text-white transition-colors">Live Music</a></li>
-              <li><a href="#" className="text-white/70 hover:text-white transition-colors">Comedy Shows</a></li>
-              <li><a href="#" className="text-white/70 hover:text-white transition-colors">Family Events</a></li>
-              <li><a href="#" className="text-white/70 hover:text-white transition-colors">Fine Dining</a></li>
+              <li><a href="clubs" className="text-white/70 hover:text-white transition-colors">Night Clubs</a></li>
+              <li><a href="/" className="text-white/70 hover:text-white transition-colors">Live Music</a></li>
+              <li><a href="/" className="text-white/70 hover:text-white transition-colors">Comedy Shows</a></li>
+              <li><a href="/" className="text-white/70 hover:text-white transition-colors">Family Events</a></li>
+              <li><a href="/" className="text-white/70 hover:text-white transition-colors">Fine Dining</a></li>
             </ul>
           </div>
 

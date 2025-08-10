@@ -17,7 +17,7 @@ const Auth = () => {
 
   useEffect(() => {
     if (user) {
-      navigate('/');
+      navigate('/Events');
     }
   }, [user, navigate]);
 
@@ -94,6 +94,7 @@ const Auth = () => {
                       required
                     />
                   </div>
+
                   <Button type="submit" className="w-full" disabled={loading}>
                     {loading ? 'Signing In...' : 'Sign In'}
                   </Button>

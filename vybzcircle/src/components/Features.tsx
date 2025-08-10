@@ -91,61 +91,6 @@ const Features = () => {
             </Card>
           ))}
         </div>
-
-        {/* Problem & Solution Highlight */}
-        <div className="mt-20 grid grid-cols-1 lg:grid-cols-2 gap-12">
-          <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-8">
-            <h3 className="text-2xl font-bold text-red-400 mb-4">The Problem</h3>
-            <ul className="space-y-3 text-white/80">
-              <li className="flex items-start">
-                <span className="text-red-400 mr-2">•</span>
-                Too much happening around us that we don't know about
-              </li>
-              <li className="flex items-start">
-                <span className="text-red-400 mr-2">•</span>
-                Difficult to discover new venues and events
-              </li>
-              <li className="flex items-start">
-                <span className="text-red-400 mr-2">•</span>
-                Promoters struggle to reach their target audience
-              </li>
-              <li className="flex items-start">
-                <span className="text-red-400 mr-2">•</span>
-                Events advertised too late for proper planning
-              </li>
-              <li className="flex items-start">
-                <span className="text-red-400 mr-2">•</span>
-                Hard to find family-friendly events online
-              </li>
-            </ul>
-          </div>
-
-          <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-8">
-            <h3 className="text-2xl font-bold text-green-400 mb-4">Our Solution</h3>
-            <ul className="space-y-3 text-white/80">
-              <li className="flex items-start">
-                <span className="text-green-400 mr-2">•</span>
-                One-stop shop for all entertainment needs
-              </li>
-              <li className="flex items-start">
-                <span className="text-green-400 mr-2">•</span>
-                See all events happening around you in real-time
-              </li>
-              <li className="flex items-start">
-                <span className="text-green-400 mr-2">•</span>
-                Affordable promotion platform for event organizers
-              </li>
-              <li className="flex items-start">
-                <span className="text-green-400 mr-2">•</span>
-                Early event notifications for better budgeting
-              </li>
-              <li className="flex items-start">
-                <span className="text-green-400 mr-2">•</span>
-                Dedicated family-friendly event categories
-              </li>
-            </ul>
-          </div>
-        </div>
       </div>
     </section>
   );
