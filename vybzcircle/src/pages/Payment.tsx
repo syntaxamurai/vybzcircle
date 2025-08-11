@@ -4,6 +4,13 @@ import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 
+// Define proper interfaces for type safety
+interface CartItem {
+  id: string | number; // Allow both string and number IDs
+  quantity: number;
+  // Add other properties as needed
+}
+
 const Payment = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -33,15 +40,15 @@ const Payment = () => {
   const discount = coupon.toLowerCase() === "vybz10" ? subtotal * 0.1 : 0;
   const total = subtotal - discount;
 
-  // Helper to load ticketsSold from localStorage
-  const loadTicketsSold = (): Record<number, number> => {
+  // Helper to load ticketsSold from localStorage with proper typing
+  const loadTicketsSold = (): Record<string, number> => {
     if (typeof window === "undefined") return {};
     const stored = localStorage.getItem("ticketsSold");
     return stored ? JSON.parse(stored) : {};
   };
 
-  // Helper to save ticketsSold to localStorage
-  const saveTicketsSold = (data: Record<number, number>) => {
+  // Helper to save ticketsSold to localStorage with proper typing
+  const saveTicketsSold = (data: Record<string, number>) => {
     if (typeof window === "undefined") return;
     localStorage.setItem("ticketsSold", JSON.stringify(data));
   };
@@ -55,9 +62,10 @@ const Payment = () => {
     // Update ticketsSold only AFTER payment succeeds
     const ticketsSold = loadTicketsSold();
 
-    // Update ticketsSold counts for all items in cart
-    cart.forEach((cartItem) => {
-      ticketsSold[cartItem.id] = (ticketsSold[cartItem.id] || 0) + cartItem.quantity;
+    // Update ticketsSold counts for all items in cart with proper typing
+    cart.forEach((cartItem: CartItem) => {
+      const itemId = String(cartItem.id); // Convert to string for consistent indexing
+      ticketsSold[itemId] = (ticketsSold[itemId] || 0) + cartItem.quantity;
     });
 
     saveTicketsSold(ticketsSold);

@@ -12,7 +12,8 @@ import { useToast } from '@/hooks/use-toast';
 import Navigation from '@/components/Navigation';
 
 interface Profile {
-  id: string;
+  id?: string;
+  user_id?: string;
   display_name: string;
   bio: string;
   phone: string;
@@ -28,7 +29,7 @@ interface Purchase {
     title: string;
     venue: string;
     event_date: string;
-  };
+  } | null;
 }
 
 const Profile = () => {
@@ -51,19 +52,47 @@ const Profile = () => {
   }, [user, navigate]);
 
   const fetchProfile = async () => {
+    if (!user?.id) {
+      setLoading(false);
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('user_id', user?.id)
+        .eq('user_id', user.id) // Now guaranteed to exist
         .single();
 
       if (error && error.code !== 'PGRST116') {
         console.error('Error fetching profile:', error);
+        // Create default profile if it doesn't exist
+        if (error.code === 'PGRST116') {
+          setProfile({
+            display_name: '',
+            bio: '',
+            phone: '',
+            avatar_url: ''
+          });
+        }
         return;
       }
 
-      setProfile(data);
+      if (data) {
+        setProfile({ ...data,
+          display_name: data.display_name ?? '',
+          bio: data.bio ?? '',
+          phone: data.phone ?? '',
+          avatar_url: data.avatar_url ?? '',});
+      } else {
+        // Set default profile if no data
+        setProfile({
+          display_name: '',
+          bio: '',
+          phone: '',
+          avatar_url: ''
+        });
+      }
     } catch (error) {
       console.error('Error fetching profile:', error);
     } finally {
@@ -72,6 +101,10 @@ const Profile = () => {
   };
 
   const fetchPurchases = async () => {
+    if (!user?.id) {
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from('purchases')
@@ -86,7 +119,7 @@ const Profile = () => {
             event_date
           )
         `)
-        .eq('user_id', user?.id)
+        .eq('user_id', user.id) // Now guaranteed to exist
         .order('purchase_date', { ascending: false });
 
       if (error) {
@@ -102,21 +135,26 @@ const Profile = () => {
 
   const updateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user || !profile) return;
+    if (!user?.id || !profile) return;
 
     setSaving(true);
     try {
+      const profileData = {
+        user_id: user.id,
+        display_name: profile.display_name || '',
+        bio: profile.bio || '',
+        phone: profile.phone || '',
+        avatar_url: profile.avatar_url || '',
+      };
+
       const { error } = await supabase
         .from('profiles')
-        .upsert({
-          user_id: user.id,
-          display_name: profile.display_name,
-          bio: profile.bio,
-          phone: profile.phone,
-          avatar_url: profile.avatar_url,
+        .upsert(profileData, {
+          onConflict: 'user_id'
         });
 
       if (error) {
+        console.error('Profile update error:', error);
         toast({
           title: "Error updating profile",
           description: error.message,
@@ -130,6 +168,11 @@ const Profile = () => {
       }
     } catch (error) {
       console.error('Error updating profile:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update profile. Please try again.",
+        variant: "destructive"
+      });
     } finally {
       setSaving(false);
     }
@@ -235,10 +278,10 @@ const Profile = () => {
                         <div key={purchase.id} className="border rounded-lg p-4">
                           <div className="flex justify-between items-start">
                             <div>
-                              <h3 className="font-semibold">{purchase.events?.title}</h3>
-                              <p className="text-sm text-muted-foreground">{purchase.events?.venue}</p>
+                              <h3 className="font-semibold">{purchase.events?.title || 'Unknown Event'}</h3>
+                              <p className="text-sm text-muted-foreground">{purchase.events?.venue || 'Unknown Venue'}</p>
                               <p className="text-sm text-muted-foreground">
-                                Event Date: {new Date(purchase.events?.event_date).toLocaleDateString()}
+                                Event Date: {purchase.events?.event_date ? new Date(purchase.events.event_date).toLocaleDateString() : 'Unknown Date'}
                               </p>
                             </div>
                             <div className="text-right">
